@@ -2,7 +2,7 @@
   <v-app>
   <v-navigation-drawer app v-model="sideNav">
     <v-list>
-        <v-list-tile>
+        <v-list-tile to="/">
           <v-list-tile-action>
             <v-icon>supervisor_account</v-icon>
           </v-list-tile-action>
