@@ -7,7 +7,7 @@ Vue.use(Vuetify, {
   theme: {
     primary: '#FF80AB',
     success: '#3cd1c2',
-    info: '#ffaa2c',
+    info: '#E57373',
     error: '#f83e70'
   }
 });
