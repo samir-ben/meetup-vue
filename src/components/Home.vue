@@ -10,11 +10,12 @@
     </v-layout>
     <v-layout row wrap class="mt-2">
       <v-flex xs12>
-        <v-carousel>
+        <v-carousel style="cursor: pointer;">
           <v-carousel-item
             v-for="meetup in meetups"
             :key="meetup.id"
             :src="meetup.imageURL"
+            @click="onLoadMeetup(meetup.id)"
           >
             <div class="title text-xs-center">{{meetup.title}}</div>
           </v-carousel-item>
@@ -38,6 +39,11 @@
           {imageURL: 'https://static.latribune.fr/full_width/607553/londre-demographie.jpg', id: 'efizjf3', title: 'Meetup à Londre'},
           {imageURL: 'https://i.f1g.fr/media/eidos/805x453_crop/2017/07/21/XVM17e6e88a-66df-11e7-a206-95aa27b386e9.jpg', id: 'oegir65', title: 'Meetup à Berlin'}
         ]
+      }
+    },
+    methods: {
+      onLoadMeetup(id) {
+        this.$router.push(('/meetups/') + id)
       }
     }
   }
