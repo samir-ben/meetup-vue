@@ -40,7 +40,7 @@ export default {
       sideNav: false,
       itemsMenu : [
         {icon: 'event', title: 'Voir les Meetups', link: '/meetups'},
-        {icon: 'location_on', title: 'Organisation', link: '/createmeetup'},
+        {icon: 'location_on', title: 'Organisation', link: '/meetup/new'},
         {icon: 'person', title: 'Profil', link: '/profile'},
         {icon: 'input', title: 'Connexion', link: '/signin'},
         {icon: 'lock', title: 'Inscription', link: '/signup'},
