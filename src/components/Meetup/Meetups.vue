@@ -1,25 +1,25 @@
 <template>
   <v-container>
-    <v-layout row wrap>
+    <v-layout row wrap v-for="meetup in meetups" :key="meetup.id" class="mb-3">
       <v-flex xs12 sm10 md8 offset-sm1 offset-md2>
             <v-card color="blue-grey darken-2" class="white--text">
               <v-container fluid>
                 <v-layout row>
                     <v-flex xs5 sm4 md3>
                 <v-img
-                  src="https://upload.wikimedia.org/wikipedia/commons/4/47/New_york_times_square-terabass.jpg"
+                  :src="meetup.imageURL"
                   height="130px"
                 ></v-img>
               </v-flex>
               <v-flex xs7 sm8 md9>
                 <v-card-title primary-title>
                   <div>
-                    <h3>Meetup</h3>
-                  <span>20 février 2019</span>
+                    <h3>{{meetup.title}}</h3>
+                  <span>{{meetup.date}}</span>
                   </div>
               </v-card-title>
               <v-card-actions>
-                <v-btn to="/meetups/1" dark>Voir</v-btn>
+                <v-btn :to="'/meetups/' + meetup.id" dark>Voir</v-btn>
               </v-card-actions>
               </v-flex>
                 </v-layout>
@@ -32,6 +32,11 @@
 
 <script>
   export default {
+    computed: {
+      meetups() {
+        return this.$store.getters.loadMeetups
+      }
+    }
   }
 </script>
 
