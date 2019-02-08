@@ -59,6 +59,21 @@
           </v-layout>
           <v-layout row>
             <v-flex xs12 md6 offset-md3>
+               <h4>Choisir la date et l'heure</h4>
+            </v-flex>
+          </v-layout>
+          <v-layout row class="mb-3">
+            <v-flex xs12 md6 offset-md3>
+                <v-date-picker v-model="date" locale='fr'></v-date-picker>
+            </v-flex>
+          </v-layout>
+          <v-layout row>
+            <v-flex xs12 md6 offset-md3>
+                <v-time-picker v-model="time" format="24hr" locale="fr"></v-time-picker>
+            </v-flex>
+          </v-layout>
+          <v-layout row>
+            <v-flex xs12 md6 offset-md3>
                <v-btn  :disabled="!formIsValid" class="primary" type="submit">Ajouter</v-btn>
             </v-flex>
           </v-layout>
@@ -69,14 +84,22 @@
 </template>
 
 <script>
+import * as moment from 'moment';
   export default {
     data() {
       return {
         title: '',
         location: '',
         imageURL: '',
-        description: ''
+        description: '',
+        date: new Date(),
+        time: new Date()
       }
+    },
+    created: function () {
+    const dateTime = moment()
+    this.date = dateTime.format('YYYY-MM-DD')
+    this.time = dateTime.format('HH:mm')
     },
     computed: {
       formIsValid () {
@@ -84,6 +107,19 @@
           this.location !== '' &&
           this.imageURL !== '' &&
           this.description !== ''
+      },
+      submittableDateTime () {
+        const date = new Date(this.date)
+        if (typeof this.time === 'string') {
+          let hours = this.time.match(/^(\d+)/)[1]
+          const minutes = this.time.match(/:(\d+)/)[1]
+          date.setHours(hours)
+          date.setMinutes(minutes)
+        } else {
+          date.setHours(this.time.getHours())
+          date.setMinutes(this.time.getMinutes())
+        }
+        return date
       }
     },
     methods: {
@@ -96,7 +132,7 @@
           location: this.location,
           imageURL: this.imageURL,
           description: this.description,
-          date: new Date()
+          date: this.submittableDateTime
         }
         this.$store.dispatch('createAMeetup', meetupData)
         this.$router.push('/meetups')
