@@ -16,9 +16,23 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    createAMeetup(state, payload){
+      return state.loadMeetups.push(payload)
+    }
 
   },
   actions: {
+    createAMeetup({commit}, payload){
+      const meetup = {
+        title: payload.title,
+        location: payload.location,
+        imageURL: payload.imageURL,
+        description: payload.description,
+        id: 'dezdzedezd423',
+        date: payload.date
+      }
+      commit('createAMeetup', meetup);
+    }
 
   },
   getters: {
