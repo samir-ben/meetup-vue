@@ -11,7 +11,7 @@
             height="400px"
           ></v-img>
           <v-card-text>
-            <div class="info--text">{{meetup.date}} - {{meetup.location}}</div>
+            <div class="info--text">{{meetup.date | moment }} - {{meetup.location}}</div>
             <div>{{meetup.description}}</div>
           </v-card-text>
           <v-card-actions>
@@ -26,14 +26,26 @@
 </template>
 
 <script>
+import * as moment from 'moment';
+moment.locale('fr');
   export default {
     props: ['id'],
     computed: {
       meetup () {
         return this.$store.getters.loadMeetup(this.id)
       }
+    },
+    methods: {
+      moment: function () {
+        return moment();
     }
-  }
+  },
+  filters: {
+    moment: function (date) {
+      return moment(date).format('Do MMMM YYYY, H:mm');
+    }
+  },
+}
 </script>
 
 <style>

@@ -15,7 +15,7 @@
                 <v-card-title primary-title>
                   <div>
                     <h3>{{meetup.title}}</h3>
-                  <span>{{meetup.date}}</span>
+                  <span>{{meetup.date | moment}}</span>
                   </div>
               </v-card-title>
               <v-card-actions>
@@ -31,12 +31,24 @@
 </template>
 
 <script>
+import * as moment from 'moment';
+moment.locale('fr');
   export default {
     computed: {
       meetups() {
         return this.$store.getters.loadMeetups
       }
+    },
+    methods: {
+      moment: function () {
+        return moment();
     }
+  },
+    filters: {
+      moment: function (date) {
+        return moment(date).format('Do MMMM YYYY, H:mm');
+      }
+    },
   }
 </script>
 
