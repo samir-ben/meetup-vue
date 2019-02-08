@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
-
+import * as firebase from 'firebase/app';
+import 'firebase/auth';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -34,14 +35,14 @@ export default new Vuex.Store({
         location: 'Berlin'
       }
     ],
-    user: {
-      id: 'ajaldslfalsk12',
-      registeredMeetups: ['feizj21']
-    }
+    user: null
   },
   mutations: {
     createAMeetup(state, payload) {
-      return state.loadMeetups.push(payload);
+      state.loadMeetups.push(payload);
+    },
+    setUser(state, payload) {
+      state.user = payload;
     }
   },
   actions: {
@@ -55,23 +56,62 @@ export default new Vuex.Store({
         date: payload.date
       };
       commit('createAMeetup', meetup);
+    },
+    userSignUp({ commit }, payload) {
+      firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
+        .then(
+          user => {
+            const newUser = {
+              id: user.uid,
+              registeredMeetups: []
+            }
+            commit('setUser', newUser)
+          }
+        )
+        .catch(
+          error => {
+            // eslint-disable-next-line
+            console.log(error)
+          }
+        )
+    },
+    userSignIn({ commit }, payload) {
+      firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
+        .then(
+          user => {
+            const newUser = {
+              id: user.uid,
+              registeredMeetups: []
+            }
+            commit('setUser', newUser)
+          }
+        )
+        .catch(
+          error => {
+            // eslint-disable-next-line
+            console.log(error)
+          }
+        )
     }
   },
   getters: {
     loadMeetups(state) {
       return state.loadMeetups.sort((meetupA, meetupB) => {
-        return meetupA.date > meetupB.date ? -1 : meetupA < meetupB ? 1 : 0;
-      });
+        return meetupA.date > meetupB.date ? -1 : meetupA < meetupB ? 1 : 0
+      })
     },
     featuredMeetups(state, getters) {
-      return getters.loadMeetups.slice(0, 5);
+      return getters.loadMeetups.slice(0, 5)
     },
     loadMeetup(state) {
-      return meetupId => {
-        return state.loadMeetups.find(function(meetup) {
-          return meetup.id === meetupId;
-        });
-      };
+      return (meetupId) => {
+        return state.loadMeetups.find(function (meetup) {
+          return meetup.id === meetupId
+        })
+      }
+    },
+    user(state) {
+      return state.user
     }
   }
-});
+})

@@ -28,6 +28,7 @@
                       label="Mot de passe"
                       name="password"
                       id='password'
+                      type="password"
                       v-model="password"
                       required>
                     </v-text-field>
@@ -39,6 +40,7 @@
                       label="Confirmation"
                       name="confirmPassword"
                       id='confirmPassword'
+                      type="password"
                       v-model="confirmPassword"
                       :rules="[comparePasswords]">
                     </v-text-field>
@@ -71,20 +73,20 @@
       comparePasswords () {
         return this.password !== this.confirmPassword ? 'Le mot de passe n\'est pas identique' : ''
       },
-      // user () {
-      //   return this.$store.getters.user
-      // }
+      user () {
+        return this.$store.getters.user
+      }
     },
-    // watch: {
-    //   user (value) {
-    //     if (value !== null && value !== undefined) {
-    //       this.$router.push('/')
-    //     }
-    //   }
-    // },
+    watch: {
+      user (value) {
+        if (value !== null && value !== undefined) {
+          this.$router.push('/')
+        }
+      }
+    },
     methods: {
       onSignup () {
-        //this.$store.dispatch('signUserUp', {email: this.email, password: this.password})
+        this.$store.dispatch('userSignUp', {email: this.email, password: this.password})
       }
     }
   }
