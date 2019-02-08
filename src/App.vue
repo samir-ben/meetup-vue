@@ -38,14 +38,26 @@ export default {
   data () {
     return {
       sideNav: false,
-      itemsMenu : [
-        {icon: 'event', title: 'Voir les Meetups', link: '/meetups'},
-        {icon: 'location_on', title: 'Organisation', link: '/meetup/new'},
-        {icon: 'person', title: 'Profil', link: '/profile'},
+    }
+  },
+  computed: {
+    itemsMenu() {
+      let itemsMenu = [
         {icon: 'input', title: 'Connexion', link: '/signin'},
         {icon: 'lock', title: 'Inscription', link: '/signup'},
       ]
+      if(this.userIsAuthenticated) {
+        itemsMenu = [
+        {icon: 'event', title: 'Voir les Meetups', link: '/meetups'},
+        {icon: 'location_on', title: 'Organisation', link: '/meetup/new'},
+        {icon: 'person', title: 'Profil', link: '/profile'},
+      ]
+      }
+       return itemsMenu
+    },
+    userIsAuthenticated() {
+      return this.$store.getters.user !== null && this.$store.getters.user !== undefined
     }
-  }
+  },
 }
 </script>
