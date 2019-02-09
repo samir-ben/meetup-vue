@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex from 'vuex';
 import * as firebase from 'firebase/app';
 import 'firebase/auth';
+import 'firebase/database';
 Vue.use(Vuex);
 
 export default new Vuex.Store({
@@ -40,6 +41,9 @@ export default new Vuex.Store({
     error: null
   },
   mutations: {
+    setLoadedMeetups(state, payload) {
+      state.loadedMeetups = payload;
+    },
     createAMeetup(state, payload) {
       state.loadMeetups.push(payload);
     },
@@ -47,101 +51,138 @@ export default new Vuex.Store({
       state.user = payload;
     },
     setLoading(state, payload) {
-      state.loading = payload
+      state.loading = payload;
     },
     setError(state, payload) {
-      state.error = payload
+      state.error = payload;
     },
     clearError(state) {
-      state.error = null
+      state.error = null;
     }
   },
   actions: {
+    loadMeetups({ commit }) {
+      commit('setLoading', true);
+      firebase
+        .database()
+        .ref('meetups')
+        .once('value')
+        .then(data => {
+          const meetups = [];
+          const obj = data.val();
+          for (let key in obj) {
+            meetups.push({
+              id: key,
+              title: obj[key].title,
+              description: obj[key].description,
+              imageUrl: obj[key].imageUrl,
+              date: obj[key].date,
+            });
+          }
+          commit('setLoadedMeetups', meetups);
+          commit('setLoading', false);
+        })
+        .catch(error => {
+          // eslint-disable-next-line
+          console.log(error);
+          commit('setLoading', false);
+        });
+    },
     createAMeetup({ commit }, payload) {
       const meetup = {
         title: payload.title,
         location: payload.location,
         imageURL: payload.imageURL,
         description: payload.description,
-        id: 'dezdzedezd423',
-        date: payload.date
+        date: payload.date.toISOString(),
       };
-      commit('createAMeetup', meetup);
+      firebase
+        .database()
+        .ref('meetups')
+        .push(meetup)
+        .then(data => {
+          const key = data.key;
+          commit('createAMeetup', {
+            ...meetup,
+            id: key
+          });
+        })
+        .catch(error => {
+          // eslint-disable-next-line
+          console.log(error);
+        });
+      // Reach out to firebase and store it
     },
     userSignUp({ commit }, payload) {
       commit('setLoading', true);
       commit('clearError');
-      firebase.auth().createUserWithEmailAndPassword(payload.email, payload.password)
-        .then(
-          user => {
-            commit('setLoading', false);
-            const newUser = {
-              id: user.uid,
-              registeredMeetups: []
-            }
-            commit('setUser', newUser)
-          }
-        )
-        .catch(
-          error => {
-            commit('setLoading', false);
-            commit('setError', error);
-            // eslint-disable-next-line
-            console.log(error)
-          }
-        )
+      firebase
+        .auth()
+        .createUserWithEmailAndPassword(payload.email, payload.password)
+        .then(user => {
+          commit('setLoading', false);
+          const newUser = {
+            id: user.uid,
+            registeredMeetups: []
+          };
+          commit('setUser', newUser);
+        })
+        .catch(error => {
+          commit('setLoading', false);
+          commit('setError', error);
+          // eslint-disable-next-line
+          console.log(error);
+        });
     },
     userSignIn({ commit }, payload) {
       commit('setLoading', true);
       commit('clearError');
-      firebase.auth().signInWithEmailAndPassword(payload.email, payload.password)
-        .then(
-          user => {
-            commit('setLoading', false);
-            const newUser = {
-              id: user.uid,
-              registeredMeetups: []
-            }
-            commit('setUser', newUser)
-          }
-        )
-        .catch(
-          error => {
-            commit('setLoading', false);
-            commit('setError', error);
-            // eslint-disable-next-line
-            console.log(error)
-          }
-        )
+      firebase
+        .auth()
+        .signInWithEmailAndPassword(payload.email, payload.password)
+        .then(user => {
+          commit('setLoading', false);
+          const newUser = {
+            id: user.uid,
+            registeredMeetups: []
+          };
+          commit('setUser', newUser);
+        })
+        .catch(error => {
+          commit('setLoading', false);
+          commit('setError', error);
+          // eslint-disable-next-line
+          console.log(error);
+        });
     },
     clearError({ commit }) {
-      commit('clearError')
+      commit('clearError');
     }
   },
   getters: {
     loadMeetups(state) {
       return state.loadMeetups.sort((meetupA, meetupB) => {
-        return meetupA.date > meetupB.date ? -1 : meetupA < meetupB ? 1 : 0
-      })
+        return meetupA.date > meetupB.date ? -1 : meetupA < meetupB ? 1 : 0;
+      });
     },
     featuredMeetups(state, getters) {
-      return getters.loadMeetups.slice(0, 5)
+      return getters.loadMeetups.slice(0, 5);
     },
     loadMeetup(state) {
-      return (meetupId) => {
-        return state.loadMeetups.find(function (meetup) {
-          return meetup.id === meetupId
-        })
-      }
+      return meetupId => {
+        return state.loadMeetups.find(function(meetup) {
+          return meetup.id === meetupId;
+        });
+      };
     },
     user(state) {
-      return state.user
+      return state.user;
     },
     loading(state) {
-      return state.loading
+      return state.loading;
     },
     error(state) {
-      return state.error
+      return state.error;
     }
   }
-})
+});
