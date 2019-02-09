@@ -40,6 +40,9 @@ export default {
       sideNav: false,
     }
   },
+  created() {
+    this.$store.dispatch('loadMeetups')
+  },
   computed: {
     itemsMenu() {
       let itemsMenu = [
